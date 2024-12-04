@@ -25,6 +25,19 @@ const schema = new mongoose.Schema({
     type: String,
   },
 
+  location: {
+    type: String,
+  },
+  isbn: {
+    type: String,
+  },
+  publisherCode: {
+    type: String,
+  },
+  copyright: {
+    type: String,
+  },
+
   status: {
     type: String,
     required: true,

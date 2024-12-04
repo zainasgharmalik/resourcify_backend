@@ -6,9 +6,29 @@ import { v2 } from "cloudinary";
 
 export const createLibraryItem = catchAsyncError(async (req, res, next) => {
   const file = req.file;
-  const { title, subtitle, type, author, edition } = req.body;
+  const {
+    title,
+    subtitle,
+    type,
+    author,
+    edition,
+    location,
+    isbn,
+    publisherCode,
+    copyright,
+  } = req.body;
 
-  if (!title || !subtitle || !type || !author || !file) {
+  if (
+    !title ||
+    !subtitle ||
+    !type ||
+    !author ||
+    !location ||
+    !isbn ||
+    !publisherCode ||
+    !copyright ||
+    !file
+  ) {
     return next(new ErrorHandler("Please enter all fields", 401));
   }
   const fileUri = getDataUri(file);
@@ -20,6 +40,10 @@ export const createLibraryItem = catchAsyncError(async (req, res, next) => {
     type: type,
     author: author,
     edition: edition,
+    location: location,
+    isbn: isbn,
+    publisherCode: publisherCode,
+    copyright: copyright,
     file: {
       public_id: mycloud.public_id,
       url: mycloud.secure_url,
