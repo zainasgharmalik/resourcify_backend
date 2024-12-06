@@ -31,9 +31,12 @@ app.get("/", (req, res) => {
 
 import userRoutes from "./routes/userRoutes.js";
 import libraryRoutes from "./routes/libraryRoutes.js";
+import labRoutes from "./routes/labRoutes.js";
+import { LabResource } from "./models/LabResource.js";
 
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", libraryRoutes);
+app.use("/api/v1", labRoutes);
 
 app.use(ErrorMiddleware);
 export default app;

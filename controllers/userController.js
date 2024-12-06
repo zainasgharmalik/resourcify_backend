@@ -4,22 +4,33 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { sendToken } from "../utils/sendToken.js";
 
 export const login = catchAsyncError(async (req, res, next) => {
-  const { rollNo, password } = req.body;
+  const { identifier, password } = req.body; // `identifier` can be rollNo or email
 
-  if (!rollNo || !password) {
-    return next(new ErrorHandler("Please Enter All Feilds", 400));
+  if (!identifier || !password) {
+    return next(new ErrorHandler("Please Enter All Fields", 400));
   }
 
-  let user = await User.findOne({ rollNo: rollNo }).select("+password");
+  let user;
+
+  // Determine if the identifier is a roll number based on its pattern
+  const rollNoPattern = /^[a-z]{2}\d{2}-[a-z]{3}-\d{3}$/i; // Matches `fa22-bse-073` format
+
+  if (rollNoPattern.test(identifier)) {
+    // If identifier matches roll number format
+    user = await User.findOne({ rollNo: identifier }).select("+password");
+  } else {
+    // Otherwise, treat identifier as an email
+    user = await User.findOne({ email: identifier }).select("+password");
+  }
 
   if (!user) {
-    return next(new ErrorHandler("Incorrect Email or Password", 409));
+    return next(new ErrorHandler("Incorrect Identifier or Password", 409));
   }
 
   const isMatch = await user.comparePassword(password);
 
   if (!isMatch) {
-    return next(new ErrorHandler("Incorrect Email or Password", 400));
+    return next(new ErrorHandler("Incorrect Identifier or Password", 400));
   }
 
   sendToken(res, user, `Welcome Back ${user.name}`, 200);
