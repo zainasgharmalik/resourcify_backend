@@ -1,8 +1,11 @@
 import express from "express";
 import {
+  changeLendLabResourceStatus,
   createLabResource,
+  createLabResourceRequest,
   deleteLabResource,
   getAllLabResourceById,
+  getAllLabResourceRequests,
   getAllLabResources,
   updateLabResource,
 } from "../controllers/labResourceController.js";
@@ -36,4 +39,24 @@ router.delete(
   deleteLabResource
 );
 
+router.post(
+  "/lend-lab-resource",
+  isAuthenticated,
+  isAuthorized("student", "teacher"),
+  createLabResourceRequest
+);
+
+router.get(
+  "/lend-lab-resources",
+  isAuthenticated,
+  isAuthorized("lab_attendant", "admin"),
+  getAllLabResourceRequests
+);
+
+router.put(
+  "/lend-lab-resource/:id",
+  isAuthenticated,
+  isAuthorized("lab_attendant", "admin"),
+  changeLendLabResourceStatus
+);
 export default router;

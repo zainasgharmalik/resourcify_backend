@@ -1,5 +1,7 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
+import { LendItemRequest } from "../models/LendItemRequest.js";
 import { LibraryItem } from "../models/LibraryItem.js";
+import { User } from "../models/User.js";
 import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { v2 } from "cloudinary";
@@ -123,3 +125,62 @@ export const deleteLibraryItem = catchAsyncError(async (req, res, next) => {
     message: "Library Item Deleted Successfully",
   });
 });
+
+export const lendLibraryItem = catchAsyncError(async (req, res, next) => {
+  const { item, startDate, endDate } = req.body;
+
+  if (!item || !startDate || !endDate) {
+    return next(new ErrorHandler("Please provide all required fields", 400));
+  }
+
+  const borrower = await User.findById(req.user._id);
+
+  if (!borrower) {
+    return next(new ErrorHandler("Borrower not found", 404));
+  }
+
+  let request = await LendItemRequest.create({
+    borrower: borrower._id,
+    item: item,
+    startDate: startDate,
+    endDate: endDate,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Library Item Lent Request Generated Successfully",
+  });
+});
+
+export const changeLendItemRequestStatus = catchAsyncError(
+  async (req, res, next) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const item = await LendItemRequest.findById(id);
+
+    if (!item) {
+      return next(new ErrorHandler("Invalid Request Id", 400));
+    }
+
+    item.status = status;
+    await item.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Lend Item Request Approved Successfully",
+    });
+  }
+);
+
+export const getAllLendItemsRequest = catchAsyncError(
+  async (req, res, next) => {
+    const items = await LendItemRequest.find()
+      .populate("borrower")
+      .populate("item");
+    res.status(200).json({
+      success: true,
+      items,
+    });
+  }
+);
