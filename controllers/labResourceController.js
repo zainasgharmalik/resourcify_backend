@@ -120,13 +120,27 @@ export const deleteLabResource = catchAsyncError(async (req, res, next) => {
 
 export const createLabResourceRequest = catchAsyncError(
   async (req, res, next) => {
-    const { item, purpose } = req.body;
-    if (!item || !purpose) {
+    const { name, regNumber, email, phoneNo, department, item, purpose } =
+      req.body;
+    if (
+      !item ||
+      !purpose ||
+      !name ||
+      !regNumber ||
+      !email ||
+      !phoneNo ||
+      !department
+    ) {
       return next(new ErrorHandler("Please enter all fields", 401));
     }
 
     await LendLabResource.create({
       borrower: req.user._id,
+      name: name,
+      regNumber: regNumber,
+      email: email,
+      phone: phoneNo,
+      department: department,
       item: item,
       purpose: purpose,
     });

@@ -9,6 +9,26 @@ export const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "LibraryItem",
   },
+  name: {
+    type: String,
+    required: true,
+  },
+  regNo: {
+    type: String,
+  },
+  department: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+
   startDate: {
     type: Date,
     required: true,
@@ -17,6 +37,7 @@ export const schema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],

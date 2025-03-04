@@ -127,9 +127,18 @@ export const deleteLibraryItem = catchAsyncError(async (req, res, next) => {
 });
 
 export const lendLibraryItem = catchAsyncError(async (req, res, next) => {
-  const { item, startDate, endDate } = req.body;
+  const { item, name, regNo, department, email, phone, startDate, endDate } =
+    req.body;
 
-  if (!item || !startDate || !endDate) {
+  if (
+    !item ||
+    !startDate ||
+    !endDate ||
+    !name ||
+    !phone ||
+    !email ||
+    !department
+  ) {
     return next(new ErrorHandler("Please provide all required fields", 400));
   }
 
@@ -142,6 +151,11 @@ export const lendLibraryItem = catchAsyncError(async (req, res, next) => {
   let request = await LendItemRequest.create({
     borrower: borrower._id,
     item: item,
+    name: name,
+    regNo: regNo,
+    department: department,
+    email: email,
+    phone: phone,
     startDate: startDate,
     endDate: endDate,
   });
