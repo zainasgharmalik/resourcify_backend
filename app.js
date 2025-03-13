@@ -32,11 +32,11 @@ app.get("/", (req, res) => {
 import userRoutes from "./routes/userRoutes.js";
 import libraryRoutes from "./routes/libraryRoutes.js";
 import labRoutes from "./routes/labRoutes.js";
-import { LabResource } from "./models/LabResource.js";
-
+import roomRoutes from "./routes/roomRoutes.js";
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", libraryRoutes);
 app.use("/api/v1", labRoutes);
+app.use("/api/v1", roomRoutes);
 
 app.use(ErrorMiddleware);
 export default app;

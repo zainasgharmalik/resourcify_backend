@@ -1,7 +1,11 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
+import { Booking } from "../models/Booking.js";
+import { LendItemRequest } from "../models/LendItemRequest.js";
+import { LendLabResource } from "../models/LendLabResourceRequest.js";
 import { User } from "../models/User.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { sendToken } from "../utils/sendToken.js";
+import { lendLibraryItem } from "./libraryItemsController.js";
 
 export const login = catchAsyncError(async (req, res, next) => {
   const { identifier, password } = req.body; // `identifier` can be rollNo or email
@@ -85,4 +89,24 @@ export const logout = catchAsyncError(async (req, res, next) => {
       sucess: true,
       message: "User Logged Out Sucessfully",
     });
+});
+
+export const getMyRequests = catchAsyncError(async (req, res, next) => {
+  const libraryItems = await LendItemRequest.find({ borrower: req.user._id })
+    .populate("item")
+    .populate("borrower");
+  const labResources = await LendLabResource.find({ borrower: req.user._id })
+    .populate("item")
+    .populate("borrower");
+
+  const roomBookings = await Booking.find({
+    user: req.user._id,
+  }).populate("roomId");
+
+  res.status(200).json({
+    success: true,
+    libraryItems,
+    labResources,
+    roomBookings,
+  });
 });
