@@ -164,7 +164,7 @@ export const requestBooking = catchAsyncError(async (req, res, next) => {
 });
 
 export const getAllBookings = catchAsyncError(async (req, res, next) => {
-  const bookings = await Booking.find().populate("room").populate("user");
+  const bookings = await Booking.find().populate("roomId").populate("user");
   res.status(200).json({ success: true, bookings });
 });
 
