@@ -7,6 +7,19 @@ const schema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+
+  name: {
+    type: String,
+  },
+  regNo: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  purpose: {
+    type: String,
+  },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
   status: {

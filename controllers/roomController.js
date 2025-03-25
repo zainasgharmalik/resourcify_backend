@@ -108,8 +108,8 @@ export const deleteRoom = catchAsyncError(async (req, res, next) => {
 });
 
 export const requestBooking = catchAsyncError(async (req, res, next) => {
-  const { roomId, startTime, endTime } = req.body;
-
+  const { roomId, name, rollNo, email, startTime, endTime, purpose } = req.body;
+  console.log(startTime, endTime);
   if (!roomId || !startTime || !endTime) {
     return next(new ErrorHandler("Please enter all fields", 400));
   }
@@ -119,13 +119,8 @@ export const requestBooking = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Room not found", 404));
   }
 
-  const isAvailable = isWithinAvailability(
-    startTime,
-    endTime,
-    room.availabilityHours.start,
-    room.availabilityHours.end
-  );
-
+  const isAvailable = isWithinAvailability(startTime, endTime, room.availabilityHours.start, room.availabilityHours.end);
+  console.log("Availability check:", isAvailable, startTime, endTime, room.availabilityHours);
   if (!isAvailable) {
     return next(
       new ErrorHandler(
@@ -154,8 +149,12 @@ export const requestBooking = catchAsyncError(async (req, res, next) => {
   const booking = new Booking({
     roomId,
     user: req.user._id,
+    name,
+    rollNo,
+    email,
     startTime,
     endTime,
+    purpose,
   });
   await booking.save();
 

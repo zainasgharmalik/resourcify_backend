@@ -8,6 +8,7 @@ import {
   getAllBookings,
   getAllRooms,
   getRoomById,
+  requestBooking,
   updateRoom,
 } from "../controllers/roomController.js";
 
@@ -44,6 +45,8 @@ router.get(
   isAuthorized("admin", "librarian"),
   getAllBookings
 );
+
+router.post("/booking", isAuthenticated, requestBooking);
 
 router.put(
   "/booking/:id",
