@@ -179,3 +179,16 @@ export const changeBookingStatus = catchAsyncError(async (req, res, next) => {
   await booking.save();
   res.status(200).json({ message: "Booking status changed successfully." });
 });
+
+
+export const changeAccountStatus = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const booking = await Booking.findById(id);
+  if (!booking) {
+    return next(new ErrorHandler("Booking not found", 404));
+  }
+  booking.status = status;
+  await booking.save();
+  res.status(200).json({ message: "Booking status changed successfully." });
+});
