@@ -8,27 +8,41 @@ import { sendToken } from "../utils/sendToken.js";
 import { lendLibraryItem } from "./libraryItemsController.js";
 
 export const login = catchAsyncError(async (req, res, next) => {
-  const { identifier, password } = req.body; // `identifier` can be rollNo or email
+  const { identifier, password, role } = req.body;
 
-  if (!identifier || !password) {
+  if (!identifier || !password || !role) {
     return next(new ErrorHandler("Please Enter All Fields", 400));
   }
 
   let user;
 
-  // Determine if the identifier is a roll number based on its pattern
-  const rollNoPattern = /^[a-z]{2}\d{2}-[a-z]{3}-\d{3}$/i; // Matches `fa22-bse-073` format
+  const rollNoPattern = /^[a-z]{2}\d{2}-[a-z]{3}-\d{3}$/i; // e.g., fa22-bse-073
 
-  if (rollNoPattern.test(identifier)) {
-    // If identifier matches roll number format
-    user = await User.findOne({ rollNo: identifier }).select("+password");
-  } else {
-    // Otherwise, treat identifier as an email
-    user = await User.findOne({ email: identifier }).select("+password");
+  // Role: student → must use rollNo
+  if (role === "student") {
+    if (!rollNoPattern.test(identifier)) {
+      return next(
+        new ErrorHandler("Students must login with Roll Number", 400)
+      );
+    }
+
+    user = await User.findOne({ rollNo: identifier, role }).select("+password");
+
+    if (!user) {
+      return next(new ErrorHandler("Invalid Roll Number or Role", 404));
+    }
   }
+  // Other roles (e.g., teacher, librarian, lab_attendant) → must use email
+  else {
+    if (rollNoPattern.test(identifier)) {
+      return next(new ErrorHandler("This role must login using Email", 400));
+    }
 
-  if (!user) {
-    return next(new ErrorHandler("Incorrect Identifier or Password", 409));
+    user = await User.findOne({ email: identifier }).select("+password");
+
+    if (!user || user.role !== role) {
+      return next(new ErrorHandler("Invalid Email or Role", 404));
+    }
   }
 
   const isMatch = await user.comparePassword(password);
